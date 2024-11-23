@@ -1,32 +1,49 @@
-import { Controller } from "./class.js";
+// import { Controller } from "./class.js";
 
-const controller = new Controller;
+// const controller = new Controller;
 
 const loginForm = document.querySelector("#login");
 const logUserName = document.querySelector("#logUserName");
 const logPassword = document.querySelector("#logPassword");
+let userState = [];
 
-loginForm.addEventListener("submit", (e)=>{
+async function getAllUsers() {
+    try {
+        let response = await axios.get('http://localhost:3000/users/');
+        console.log(response);
+        userState = response.data;
+    } catch (error) {
+        alert("Network error occured!", error)
+
+        
+    }
+  
+}
+
+
+loginForm.addEventListener("submit", async (e)=>{
     e.preventDefault();
 
-    controller.login(logUserName.value, logPassword.value);
+    // controller.login(logUserName.value, logPassword.value);
     // let users = JSON.parse(localStorage.getItem("users")) || [];
 
-    // let selectedUser = users.find(user => user.username === logUserName.value);
+    await getAllUsers();
 
-    // if (!selectedUser) {
-    //     alert("User not found!")
-    //     return;
-    // }
+    let selectedUser = userState.find(user => user.username === logUserName.value);
 
-    // if (selectedUser.password != logPassword.value) {
-    //     alert("Pasword is not correct");
-    //     return;
-    // }
+    if (!selectedUser) {
+        alert("User not found!")
+        return;
+    }
 
-    // localStorage.setItem("currentUser", selectedUser.username);
-    // alert("Successful log in!");
-    // window.location = "./";
+    if (selectedUser.password != logPassword.value) {
+        alert("Pasword is not correct");
+        return;
+    }
+
+    localStorage.setItem("currentUser", selectedUser.id);
+    alert("Successful log in!");
+    window.location = "./";
  
 
     

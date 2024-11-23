@@ -1,24 +1,43 @@
-import { Controller } from "./class.js";
-const controller = new Controller;
-const currentUser = localStorage.getItem("currentUser") || null;
+// import { Controller } from "./class.js";
+// const controller = new Controller;
+
+let currentUserState = null;
+
+async function getUserById() {
+    try {
+        const currentUserId = localStorage.getItem("currentUser") || null;
+
+        if (currentUserId) {
+            let response = await axios.get(`http://localhost:3000/users/${currentUserId}`);
+            currentUserState = response.data;
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
+await getUserById();
 
 let nav = document.querySelector('.navbar');
 
-if (currentUser) {
+if (currentUserState) {
     nav.innerHTML = `
-        <h1>Hello, <span>${currentUser}</span></h1>
+        <h1>Hello, <span>${currentUserState.username}</span></h1>
         <a href="#" id="logOut">
             Log out !
         </a>
     
     `
-    document.querySelector("#logOut").addEventListener('click',()=>{
-        // localStorage.removeItem("currentUser");
-        // window.location.reload();
+    document.querySelector("#logOut").addEventListener('click', () => {
+        localStorage.removeItem("currentUser");
+        window.location.reload();
 
-        controller.logout();
+        // controller.logout();
     })
 } else {
+    localStorage.removeItem('currentUser');
     nav.innerHTML = `
             <h1>You are not logged in!</h1>
             <a href="./login.html">
